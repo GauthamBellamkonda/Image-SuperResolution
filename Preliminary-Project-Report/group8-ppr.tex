@@ -150,17 +150,18 @@ Shifting toward medical image analysis, Mahaprata et al. \cite{mahapatra2019imag
 
 Collectively, these papers reflect the diverse approaches and methodologies employed in image super-resolution, from deep learning and recursive architectures to the application of GANs, with significant implications for various domains, including healthcare and diagnostics.
 
-\textbf{Very Low Resolution Image Classification}\cite{vest2017very} utilizes a super resolution net to improve the image resolution before passing it through a network. Comparision of Low Resolution (LR), High Resolution (HR) and Super Resolution (SR) show that the HR gives the best accuracy. closely followed by SRResNet SR Classifier which beats the bicubic interpolation considerably.
+\textbf{Very Low Resolution Image Classification}\cite{vest2017very} utilizes a super resolution net to improve the image resolution before passing it through a network. Comparision of Low Resolution (LR), High Resolution (HR) and Super Resolution (SR) show that the HR gives the best accuracy. closely followed by SRResNet \cite{ledig2017photo} SR Classifier which beats the bicubic interpolation considerably.
 
-We aim to do the same but on the datasets pertaining to medical images.
+% We aim to do the same but on the datasets pertaining to medical images.
 
 \section{Our Methodology}
-After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new datasets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 dataset, as the existing SRResNet was trained on more or less natural images.
+We aim to study how enhancing the resolution of medical images helps in improving classification accuracy. 
+The resolution of the images is increased using two methods: bicubic interpolation and the SRResNet \cite{ledig2017photo}. Convolutional Neural Networks are trained on the two generated datasets and the results are compared. 
 
-The resolution of the images is increased using bicubic interpolation and the SRResNet. Convolutional Neural Networks are trained on the two generated datasets and the results are compared. Bicubic interpolation is an image resizing technique that estimates pixel values at non-integer coordinates based on neighboring pixels. It employs a smooth cubic function to perform weighted averaging of 16 nearby pixels, resulting in high-quality and visually smooth resized images.However, it's not a learned model like neural networks but rather a deterministic mathematical operation.
+Bicubic interpolation is an image resizing technique that estimates pixel values at non-integer coordinates based on neighboring pixels. It employs a smooth cubic function to perform weighted averaging of 16 nearby pixels, resulting in high-quality and visually smooth resized images.However, it's not a learned model like neural networks but rather a deterministic mathematical operation.
 
 \subsection{Architecture of the SRResNet}
-The SRResNet architecture is essentially a generator network designed for super-resolution tasks, and it leverages residual blocks to improve image quality and resolution.We employed 16 residual blocks to enhance the quality and resolution of the super-resolved images.This approach is different from traditional super-resolution methods that minimize pixel-wise errors like Mean Squared Error (MSE).
+The SRResNet \cite{ledig2017photo} architecture is essentially a generator network designed for super-resolution tasks, and it leverages residual blocks to improve image quality and resolution. We employed 16 residual blocks to enhance the quality and resolution of the super-resolved images. This approach is different from traditional super-resolution methods that minimize pixel-wise errors like Mean Squared Error (MSE).
 
 \subsubsection{Residual Blocks:}
 This is a building block for the residual network.The block is designed to help the network capture residual information, which is the difference between the super-resolved image and the low-resolution input image. This allows for easier training and the generation of high-quality results.Each Residual Block consists of the following key elements:
@@ -170,7 +171,7 @@ This is a building block for the residual network.The block is designed to help 
     \item LeakyReLU Activation: A LeakyReLU activation function is employed with a slope of 0.2. LeakyReLU introduces non-linearity, allowing the network to learn complex mappings, and mitigating the vanishing gradient problem.
 \end{enumerate}
 
-\subsubsection{Generator Network (G):}
+\subsubsection{Generator Network:}
 \begin{enumerate}
     \item Residual Blocks: The core of the Generator Network consists of 16 Residual Blocks, each comprising two 3x3 convolutional layers with 64 feature maps, batch normalization for enhanced training stability, and LeakyReLU activation functions for introducing non-linearity.
 
@@ -182,14 +183,14 @@ This is a building block for the residual network.The block is designed to help 
 \end{enumerate}
 \begin{figure}
     \centering
-    \begin{subfigure}{0.6\textwidth}
+    \begin{subfigure}{0.5\textwidth}
         \centering
-        \includegraphics[width=\linewidth]{Preliminary-Project-Report/SRResNet.png}
+        \includegraphics[width=\linewidth]{SRResNet.png}
         \caption{Architecture of the SRResNet}
     \end{subfigure}
 \end{figure}
 
-\subsection{Architecture of the CNN}
+\subsection{Architecture of the Classifier}
 The standard architecture of ResNet18 shown in \ref{fig:enter-label} is used.
 
 \subsubsection{Input Layer}
@@ -206,7 +207,7 @@ ResNet-18 consists of four residual blocks, each containing multiple convolution
 \begin{enumerate}
     \item Convolution Layers: Typically, two 3x3 convolutional layers are used in each block.
     \item Batch Normalization and ReLU activation are applied after each convolution.
-    \item Shortcut Connection: A "skip connection" or "identity shortcut" allows the input to bypass the convolutional layers in the block. This connection helps to mitigate the vanishing gradient problem and facilitates training of very deep networks.
+    \item Shortcut Connection: A ``skip connection" or ``identity shortcut" allows the input to bypass the convolutional layers in the block. This connection helps to mitigate the vanishing gradient problem and facilitates training of very deep networks.
     \item Merge Operation: The output of the convolutional layers is added to the shortcut connection, creating a residual connection. This addition operation is element-wise.
 \end{enumerate}
 
@@ -221,26 +222,31 @@ The final layer is typically a softmax activation for classification tasks, prov
 
 \begin{figure}
     \centering
-    \includegraphics{Preliminary-Project-Report/ResNet18 - 1.png}
+    \begin{subfigure}{0.5\textwidth}
+        \includegraphics[width=\linewidth]{ResNet18 - 1.png}
+    \end{subfigure}
     \caption{Architecture of the CNN}
     \label{fig:enter-label}
 \end{figure}
 
-It is observed that the SRResNet architecture performs better than the bicubic interpolation by a reasonable margin.
+\section{Experiments and Results}
+After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new datasets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 and CIFAR-100 dataset, as the existing SRResNet was trained on more or less natural images.
 
-\begin{table}
+Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our datasets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
+
+\begin{table} 
     \begin{center}
-    \begin{tabular}{|| c | c ||}
+    \begin{tabular}{|| c | c | c ||}
         \hline
-        Architecture & Accuracy \\
+        Architecture & CIFAR-10 & CIFAR-100 \\
         \hline\hline
-        SRResNet &  56\% \\
+        Bicubic Interpolation & $93.51$  & $76.04$ \\
         \hline
-        Bicubic Interpolation & 45\% \\
+        SRResNet &  $\mathbf{94.15} $ & $\mathbf{77.12}$ \\
         \hline
     \end{tabular}
     
-    \caption{Accuracy for each architecture}
+    \caption{Accuracy (in \%) for each architecture}
     \label{tab:my_label}
     \end{center}
 \end{table}
