@@ -234,6 +234,11 @@ After going through the computation and training of the SRResNet, we realize tha
 
 Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our datasets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
 
+This results are still preliminary and we are working on ways to improve the accuracy of the classifier.
+
+\section{Future Work}
+We are currently working on training the SRResNet on medical image datasets. We are also working on training the classifier on the same datasets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images. 
+
 \begin{table} 
     \begin{center}
     \begin{tabular}{|| c | c | c ||}
