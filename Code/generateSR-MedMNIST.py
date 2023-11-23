@@ -28,10 +28,10 @@ warnings.filterwarnings("ignore")
 
 # Configurations
 
-dataset = 'dermamnist'
+dataset = 'retinamnist'
 img_size = 28
 batch_size = 64
-num_classes = 7
+num_classes = 5
 finetuning_epochs = 15
 epochs = 100
 
@@ -46,13 +46,13 @@ epochs = 100
 
 
 srmodel = torch.load('model/model_srresnet.pth')["model"]
-srmodel = srmodel.cuda()
 
 
 # In[4]:
 
 
 def generate_sr_dataset(dataset, model):
+    model.cuda()
     sr_images, sr_targets = [], []    
     dataloader = DataLoader(dataset, batch_size=512, shuffle=False, num_workers=4)
     for (inputs, targets) in tqdm(dataloader):
@@ -60,9 +60,10 @@ def generate_sr_dataset(dataset, model):
             inputs = inputs.cuda()
             inputs = Variable(inputs).float()
             sr_inputs = model(inputs)
+            inputs.cpu()
             sr_images.append(sr_inputs.cpu().numpy().astype(np.float32))
             sr_targets.append(targets.numpy().astype(np.int64))
-
+    model.cpu()
     sr_images = np.concatenate(sr_images, axis=0).clip(0, 1)
     sr_targets = np.concatenate(sr_targets, axis=0)
 
@@ -152,34 +153,34 @@ bc_testloader = DataLoader(bc_testset, batch_size=batch_size, shuffle=False, num
 # In[9]:
 
 
-for i, (inputs, targets) in enumerate(lr_trainloader):
-    print(inputs.shape, targets.shape)
-    plt.imshow(inputs[0].permute(1, 2, 0))
-    plt.title('Low Resolution Image')
-    plt.show()
-    break
+# for i, (inputs, targets) in enumerate(lr_trainloader):
+#     print(inputs.shape, targets.shape)
+#     plt.imshow(inputs[0].permute(1, 2, 0))
+#     plt.title('Low Resolution Image')
+#     plt.show()
+#     break
 
 
 # In[10]:
 
 
-for i, (inputs, targets) in enumerate(bc_trainloader):
-    print(inputs.shape, targets.shape)
-    plt.imshow(inputs[0].permute(1, 2, 0))
-    plt.title('Bicubic Interpolation Image')
-    plt.show()
-    break
+# for i, (inputs, targets) in enumerate(bc_trainloader):
+#     print(inputs.shape, targets.shape)
+#     plt.imshow(inputs[0].permute(1, 2, 0))
+#     plt.title('Bicubic Interpolation Image')
+#     plt.show()
+#     break
 
 
 # In[11]:
 
 
-for i, (inputs, targets) in enumerate(sr_trainloader):
-    print(inputs.shape, targets.shape)
-    plt.imshow(inputs[0].permute(1, 2, 0))
-    plt.title('Super Resolution Image')
-    plt.show()
-    break
+# for i, (inputs, targets) in enumerate(sr_trainloader):
+#     print(inputs.shape, targets.shape)
+#     plt.imshow(inputs[0].permute(1, 2, 0))
+#     plt.title('Super Resolution Image')
+#     plt.show()
+#     break
 
 
 # ### Training a CNN
@@ -287,7 +288,7 @@ torch.save(model.state_dict(), f'model/model_sr_finetune15_{dataset}.pth')
 
 # In[ ]:
 
-
+plt.figure()
 plt.plot(lr_val_acc, label='LR')
 plt.plot(bc_val_acc, label='bicubic')
 plt.plot(sr_val_acc, label='srresnet')
@@ -296,7 +297,7 @@ plt.ylabel('Validation Accuracy')
 plt.title(f'Finetuning performance on {dataset}')
 plt.legend()
 plt.grid()
-plt.show()
+# plt.show()
 plt.savefig(f'./finetune_{dataset}.png')
 
 
@@ -306,6 +307,8 @@ plt.savefig(f'./finetune_{dataset}.png')
 model = create_model(False, num_classes)
 lr_val_acc = train(model, lr_trainloader, lr_valloader, epochs=epochs)
 test(model, lr_testloader)
+
+np.save(f'./lr_val_acc_train_{dataset}.npy', np.array(lr_val_acc))
 
 torch.save(model.state_dict(), f'model/model_lr_scratch100_{dataset}.pth')
 
@@ -332,7 +335,7 @@ torch.save(model.state_dict(), f'model/model_sr_scratch100_{dataset}.pth')
 
 # In[ ]:
 
-
+plt.figure()
 plt.plot(lr_val_acc, label='LR')
 plt.plot(bc_val_acc, label='bicubic')
 plt.plot(sr_val_acc, label='srresnet')
@@ -341,6 +344,6 @@ plt.ylabel('Accuracy')
 plt.title(f'Training performance on {dataset}')
 plt.legend()
 plt.grid()
-plt.show()
+# plt.show()
 plt.savefig(f'./train_{dataset}.png')
 
