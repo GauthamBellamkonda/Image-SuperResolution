@@ -308,8 +308,6 @@ model = create_model(False, num_classes)
 lr_val_acc = train(model, lr_trainloader, lr_valloader, epochs=epochs)
 test(model, lr_testloader)
 
-np.save(f'./lr_val_acc_train_{dataset}.npy', np.array(lr_val_acc))
-
 torch.save(model.state_dict(), f'model/model_lr_scratch100_{dataset}.pth')
 
 
