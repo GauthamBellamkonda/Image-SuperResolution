@@ -230,6 +230,15 @@ The final layer is typically a softmax activation for classification tasks, prov
 \end{figure}
 
 \section{Experiments}
+We conducted our experiments using the PathMNIST dataset, a medical imaging dataset with nine distinct classes. 
+For super-resolution preprocessing, we utilized an off-the-shelf SR Resnet model, pretrained on natural images. Due to the unavailability of high-resolution medical images for training a specific model, this pretrained approach served as a practical solution for enhancing the resolution of our PathMNIST dataset.
+The classification model employed in our experiments is a modified version of the ResNet18 architecture. This modification ensures that the model outputs the same number of logits as the classes present in the PathMNIST dataset.
+To evaluate the performance of our models, we adhered to the official train-validation-test split provided by the dataset, allocating 90K images for training, 10K for validation, and 7K for testing.
+We trained our models for 100 epochs, with a batch size of 64, using the Adam optimizer with a learning rate of 0.001. We used the Cross-Entropy Loss function to train our models.
+We evaluated the performance of our models on the test set, reporting the accuracy and loss values. 
+All experiments were conducted in a Python 3.10 environment, using PyTorch 2.0 and CUDA 11.1.
+
+
 After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new data sets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 and CIFAR-100 data set, as the existing SRResNet was trained on more or less natural images.
 
 Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our data sets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
@@ -247,38 +256,27 @@ From the training and tuning plots, we observe that the bicubic model performs a
 \subsection{SRResNet model}
 From the training and testing plots, we observe that the SRResNet model achieves accuracies comparable to the bicubic model. Fine tuning the model does help and it hits an accuracy of 77\%, 97\%, and 48\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
-We conducted our experiments using the PathMNIST dataset, a medical imaging dataset with nine distinct classes. 
-For super-resolution preprocessing, we utilized an off-the-shelf SR Resnet model, pretrained on natural images. Due to the unavailability of high-resolution medical images for training a specific model, this pretrained approach served as a practical solution for enhancing the resolution of our PathMNIST dataset.
-The classification model employed in our experiments is a modified version of the ResNet18 architecture. This modification ensures that the model outputs the same number of logits as the classes present in the PathMNIST dataset.
-To evaluate the performance of our models, we adhered to the official train-validation-test split provided by the dataset, allocating 90K images for training, 10K for validation, and 7K for testing.
-We trained our models for 100 epochs, with a batch size of 64, using the Adam optimizer with a learning rate of 0.001. We used the Cross-Entropy Loss function to train our models.
-We evaluated the performance of our models on the test set, reporting the accuracy and loss values. 
-All experiments were conducted in a Python 3.10 environment, using PyTorch 2.0 and CUDA 11.1.
 
 \subsection*{Results}
 Our experiments revealed that the SRResNet model outperformed the bicubic interpolation approach, achieving an accuracy of 89\% and a loss of 0.32, compared to 88\% accuracy and 0.34 loss for the bicubic interpolation approach. These results indicate that SRResNet can be used to enhance the resolution of medical images, improving the accuracy of classification models.
-\begin{table}[h]
-    \centering
 \section{Future Work}
 We are currently working on training the SRResNet on medical image data sets. We are also working on training the classifier on the same data sets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images.
 
-\begin{table} 
-    \begin{center}
-    \begin{tabular}{|| c | c | c ||}
-        \hline
-        Architecture & Accuracy & Loss \\
-        \hline\hline
-        Bicubic Interpolation & $0.88$  & $0.34$ \\
-        \hline
-        SRResNet &  $\mathbf{0.89} $ & $\mathbf{0.32}$ \\
-        \hline
-    \end{tabular}
-    \caption{Comparision of accuracies (in \%) }
-    \label{tab:my_label}
-\end{table}
+% \begin{table} 
+%     \begin{tabular}{|| c | c | c ||}
+%         \hline
+%         Architecture & Accuracy & Loss \\
+%         \hline\hline
+%         Bicubic Interpolation & $0.88$  & $0.34$ \\
+%         \hline
+%         SRResNet &  $\mathbf{0.89} $ & $\mathbf{0.32}$ \\
+%         \hline
+%     \end{tabular}
+%     \caption{Comparision of accuracies (in \%) }
+%     \label{tab:my_label}
+% \end{table}
 
 
-\section{Future Work}
 % We are currently working on training the SRResNet on medical image datasets. We are also working on training the classifier on the same datasets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images. 
 
 % \begin{table} 
