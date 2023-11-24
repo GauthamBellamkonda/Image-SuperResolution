@@ -194,7 +194,7 @@ This is a building block for the residual network.The block is designed to help 
 The standard architecture of ResNet18 shown in \ref{fig:enter-label} is used.
 
 \subsubsection{Input Layer}
-The input to ResNet-18 is typically a 3-channel (RGB) image, and its dimensions depend on the specific task and dataset it is designed for.
+The input to ResNet-18 is typically a 3-channel (RGB) image, and its dimensions depend on the specific task and data set it is designed for.
 
 \subsubsection{Convolutional Layer}
 The network starts with a standard convolutional layer with 64 filters, a kernel size of 7x7, and a stride of 2, which reduces the spatial dimensions.
@@ -211,8 +211,8 @@ ResNet-18 consists of four residual blocks, each containing multiple convolution
     \item Merge Operation: The output of the convolutional layers is added to the shortcut connection, creating a residual connection. This addition operation is element-wise.
 \end{enumerate}
 
-\subsubsection{Downsampling}
-After the first residual block, there is a downsampling operation, typically performed by a convolutional layer with a stride of 2. This reduces the spatial dimensions while increasing the number of filters.
+\subsubsection{Down sampling}
+After the first residual block, there is a down sampling operation, typically performed by a convolutional layer with a stride of 2. This reduces the spatial dimensions while increasing the number of filters.
 
 \subsubsection{Fully Connected Layer}
 The global average pooling operation is applied to the output of the last residual block to reduce the spatial dimensions to a 1x1 feature map. A fully connected layer with the desired number of output neurons is added on top of the global average pooling layer to make predictions for the specific task (e.g., classification).
@@ -229,15 +229,26 @@ The final layer is typically a softmax activation for classification tasks, prov
     \label{fig:enter-label}
 \end{figure}
 
-\section{Experiments and Results}
-After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new datasets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 and CIFAR-100 dataset, as the existing SRResNet was trained on more or less natural images.
+\section{Experiments}
+After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new data sets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 and CIFAR-100 data set, as the existing SRResNet was trained on more or less natural images.
 
-Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our datasets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
+Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our data sets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
 
-This results are still preliminary and we are working on ways to improve the accuracy of the classifier.
+We have improved on the preliminary results and moved to the domain of medical images. dermaMNIST, pathMNIST, and retinaMNIST data sets have been used to train and test three different architectures, model taking inputs as enlarged images using bicubic interpolation, model taking inputs as enlarged images using SRRestNet, and model taking in unmodified images.
+
+\section{Results and Observations}
+
+\subsection{LR model}
+From the training and tuning plots, we observe that performs as well as the other two models initially on the dermaMNIST data set. With respect to the pathMNIST and retinaMNIST data set, the model performs poorly in relation. The accuracy of the LR model does not increase significantly with tuning. The model achieves an accuracy of 73\%, 90\%, and 45\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+
+\subsection{Bicubic model}
+From the training and tuning plots, we observe that the bicubic model performs as good as the SRRestNet. This came as a surprise to the authors, as we expected the SRResNet model to perform better by a higher margin than observed. In the case of retinaMNIST, the bicubic model beats the SRResNet model by 5\%! Tuning the model does improve its performance significantly. The model achieves an accuracy of 77\%, 97\%, and 54\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+
+\subsection{SRResNet model}
+From the training and testing plots, we observe that the SRResNet model achieves accuracies comparable to the bicubic model. Fine tuning the model does help and it hits an accuracy of 77\%, 97\%, and 48\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
 \section{Future Work}
-We are currently working on training the SRResNet on medical image datasets. We are also working on training the classifier on the same datasets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images. 
+We are currently working on training the SRResNet on medical image data sets. We are also working on training the classifier on the same data sets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images.
 
 \begin{table} 
     \begin{center}
