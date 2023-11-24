@@ -16,6 +16,9 @@
 \usepackage{lipsum}
 \usepackage{cite}
 \usepackage{amsmath,amssymb,amsfonts}
+\usepackage{bbding}
+\usepackage{makecell}
+
 % \usepackage{textcomp}
 % \usepackage{subfloat}
 % \usepackage{xcolor}
@@ -230,20 +233,36 @@ The final layer is typically a softmax activation for classification tasks, prov
 \end{figure}
 
 \section{Experiments}
-We conducted our experiments using the PathMNIST dataset, a medical imaging dataset with nine distinct classes. 
-For super-resolution preprocessing, we utilized an off-the-shelf SR Resnet model, pretrained on natural images. Due to the unavailability of high-resolution medical images for training a specific model, this pretrained approach served as a practical solution for enhancing the resolution of our PathMNIST dataset.
-The classification model employed in our experiments is a modified version of the ResNet18 architecture. This modification ensures that the model outputs the same number of logits as the classes present in the PathMNIST dataset.
-To evaluate the performance of our models, we adhered to the official train-validation-test split provided by the dataset, allocating 90K images for training, 10K for validation, and 7K for testing.
-We trained our models for 100 epochs, with a batch size of 64, using the Adam optimizer with a learning rate of 0.001. We used the Cross-Entropy Loss function to train our models.
-We evaluated the performance of our models on the test set, reporting the accuracy and loss values. 
-All experiments were conducted in a Python 3.10 environment, using PyTorch 2.0 and CUDA 11.1.
-
-
 After going through the computation and training of the SRResNet, we realize that the computational complexity to train such a network on new data sets would be beyond the resources available at this time. Hence, we use an off the shelf pre-trained SRResNet for experimenting using the CIFAR-10 and CIFAR-100 data set, as the existing SRResNet was trained on more or less natural images.
+The classification model employed in our experiments is a modified version of the ResNet18 architecture. This modification ensures that the model outputs the same number of logits as the classes present in the dataset.
+Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. In one variation of experiments, we have tried to finetune a pretrained ResNet18 model on our datasets for 15 epochs, while in the other, we train the model from scratch for 100 epochs. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
 
-Training on this setting has been done without any hyper-parameter tuning. A constant learning rate of 0.001 was used for training the classifier. The classifier was a pre-trained ResNet18. It is further fine-tuned on our data sets. It is observed that the SRResNet architecture performs better than the bicubic interpolation, as shown in table \ref{tab:my_label}.
+\begin{table} 
+    \begin{center}
+    \begin{tabular}{|| c | c | c ||}
+        \hline
+        Architecture & CIFAR-10 & CIFAR-100 \\
+        \hline\hline
+        Bicubic Interpolation & $93.51$  & $76.04$ \\
+        \hline
+        SRResNet &  $\mathbf{94.15} $ & $\mathbf{77.12}$ \\
+        \hline
+    \end{tabular}
+    
+    \caption{Comparision of accuracies (in \%) }
+    \label{tab:my_label}
+    \end{center}
+\end{table}
 
-We have improved on the preliminary results and moved to the domain of medical images. dermaMNIST, pathMNIST, and retinaMNIST data sets have been used to train and test three different architectures, model taking inputs as enlarged images using bicubic interpolation, model taking inputs as enlarged images using SRRestNet, and model taking in unmodified images.
+Seeing encouraging results on CIFAR10 and CIFAR100, we have moved to the domain of medical images. DermaMNIST, PathMNIST, and RetinaMNIST data sets from the MedMNIST \cite{medmnistv2} dataset collection  have been used to train and test three different architectures -
+\begin{enumerate}
+    \item Model taking in unmodified lower resolution images (LR Model)
+    \item Model taking images enlarged using bicubic interpolation (BC Model)
+    \item Model taking images enlarged using SuperResolution (SR Model)
+\end{enumerate}
+
+To evaluate the performance of our models, we adhered to the official train-validation-test split provided by the datasets.
+All trainings were done with no hyperparameter tuning, with a batch size of 64, using the Adam optimizer with a learning rate of 0.001 on all the datasets. We used the Cross-Entropy Loss function to train our models, and evaluated the performance of our models on the test set, reporting the test accuracies. All experiments were conducted in a Python 3.7.16 environment, using PyTorch 2.0 and CUDA 11.1.
 
 \section{Results and Observations}
 
@@ -275,8 +294,39 @@ From Fig. \ref{fig: fine tune}, we observe that performs as well as the other tw
 \subsection{Bicubic model}
 From Fig. \ref{fig: fine tune}, we observe that the bicubic model performs as good as the SRRestNet. This came as a surprise to the authors, as we expected the SRResNet model to perform better by a higher margin than observed. In the case of retinaMNIST, the bicubic model beats the SRResNet model by 5\%! Tuning the model does improve its performance significantly. The model achieves an accuracy of 77\%, 97\%, and 54\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
+The time complexity of the Bicubic interpolation considered is O(200704). Bicubic interpolation doesn't have any significant space complexity associated with learning parameters.
+
 \subsection{SRResNet model}
 From Fig. \ref{fig: fine tune}, we observe that the SRResNet model achieves accuracies comparable to the bicubic model. Fine tuning the model does help and it hits an accuracy of 77\%, 97\%, and 48\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+
+The time complexity of training SRResNet depends on the number of layers, the number of parameters, and the size of the training dataset. The memory requirements depend on the architecture of the network, including the number of layers and the size of each layer.
+The tabular representation \ref{tab:my_label} shows differences among Low-Resolution (LR), Super-Resolution (SR), and bicubic interpolation methodologies in terms of various parameters, including time complexities and the number of parameters.
+
+\begin{table} 
+    \begin{center}
+    \begin{tabular}{|| c | c | c | c ||}
+        \hline
+                 & LR & SR &Bicubic\\
+        \hline\hline
+        \makecell{Time\\ Complexity} & $~8$ $hours$  & $~8$ $hours$ & $~8$ $hours$ \\
+        \hline
+        \makecell{Total\\ Parameters} &  $\mathbf{11,181,129} $ & $\mathbf{12,727,881}$ & $\mathbf{11,181,129}$\\
+        \hline
+         \makecell{Parameter \\ Size (in MB)} &  $\mathbf{42.65} $ & $\mathbf{48.45}$&  $\mathbf{42.65} $  \\
+         \hline
+        \makecell{Estimated \\ Total Size \\ (in MB)} &  $\mathbf{43.75} $ & $\mathbf{111.2}$ &  $\mathbf{43.75} $  \\
+        \hline \hline
+    \end{tabular}
+    
+    \caption{Comparision among LR,SR,Bicubic}
+    \label{tab:table 2}
+    \end{center}
+\end{table}
+
+Given that SRResNet wasn't trained from the beginning, the time mentioned in the table doesn't contain its training duration.
+
+
+
 
 \begin{figure}
     \centering
@@ -300,13 +350,45 @@ From Fig. \ref{fig: fine tune}, we observe that the SRResNet model achieves accu
     \label{fig: fine tune}
 \end{figure}
 
+\begin{table}[]
+    \centering
+    \begin{tabular}{||c|c|c|c||}
+    \hline
+         Number of Images & LR & Bicubic & SRResNet \\ \hline \hline
+         5379 & \Checkmark & \Checkmark & \Checkmark \\ \hline
+         749 & \XSolidBrush & \Checkmark & \Checkmark \\ \hline
+         169 & \Checkmark & \XSolidBrush & \Checkmark \\ \hline
+         141 & \Checkmark & \Checkmark & \XSolidBrush \\ \hline
+         177 & \XSolidBrush & \XSolidBrush & \Checkmark \\ \hline
+         116 & \Checkmark & \XSolidBrush & \XSolidBrush \\ \hline
+         107 & \XSolidBrush & \Checkmark & \XSolidBrush \\ \hline
+         342 & \XSolidBrush & \XSolidBrush & \XSolidBrush \\ \hline
+    \hline
+    \end{tabular}
+    \caption{Number of Images classified correctly in PathMNIST}
+    \label{tab:table2}
+\end{table}
+
 \section{Conclusion}
-Our experiments revealed that the SRResNet model outperformed the bicubic interpolation approach, achieving an accuracy of 89\% and a loss of 0.32, compared to 88\% accuracy and 0.34 loss for the bicubic interpolation approach. These results indicate that SRResNet can be used to enhance the resolution of medical images, improving the accuracy of classification models.
+Our experiments revealed that the SR method imporved upon the bicubic interpolation approach, and outperformed the baseline by a huge margin. These results indicate that SRResNet can be used to enhance the resolution of medical images, improving the accuracy of classification models.
 
 Looking at the complexity of the algorithms, we see that X is of higher order complexity than Y. As both bicubic and SRResNet architecture achieve comparable classification accuracies, the authors believe it more prudent to choose Y for applications.
 
-\section{Future Work}
-We are currently working on training the SRResNet on medical image data sets. We are also working on training the classifier on the same data sets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images.
+\section{Contributions}
+\subsection{Aditya Somasundaram}
+Worked on the identification of the problem statement, coming up with a plausible solution, implemented the solution (in specific the bicubic model) and analysis of the results, worked on the reports.
+
+\subsection{Gautham Bellamkonda}
+Worked on the identification of the problem statement, coming up with a plausible solution, implemented the solution (in specific the SRResNet model and tuning) and analysis of the results.
+
+\subsection{Ruthwika Boyapally}
+Worked on the identification of the problem statement, coming up with a plausible solution, implemented the solution (in specific the LR model) and analysis of the results, worked on the reports.
+
+\subsection{Sumanth N R}
+Worked on the identification of the problem statement, coming up with a plausible solution, implemented the solution (helped in tuning the models).
+
+% \section{Future Work}
+% We are currently working on training the SRResNet on medical image data sets. We are also working on training the classifier on the same data sets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images.
 
 % \begin{table} 
 %     \begin{tabular}{|| c | c | c ||}
