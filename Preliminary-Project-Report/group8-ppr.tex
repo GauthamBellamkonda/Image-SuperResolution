@@ -247,18 +247,64 @@ We have improved on the preliminary results and moved to the domain of medical i
 
 \section{Results and Observations}
 
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/train_dermamnist.png}
+        \caption{Training models for dermaMNIST}
+        \label{fig:training derma}
+    \end{subfigure}
+    
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/train_pathmnist.png}
+        \caption{Training models for pathMNIST}
+        \label{fig:training path}
+    \end{subfigure}
+
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/train_retinamnist.png}         \caption{Training models for retinaMNIST}
+        \label{fig:training retina}
+    \end{subfigure}
+    \caption{Training results of the three architectures}
+    \label{fig:training tune}
+\end{figure}
+
 \subsection{LR model}
-From the training and tuning plots, we observe that performs as well as the other two models initially on the dermaMNIST data set. With respect to the pathMNIST and retinaMNIST data set, the model performs poorly in relation. The accuracy of the LR model does not increase significantly with tuning. The model achieves an accuracy of 73\%, 90\%, and 45\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+From Fig. \ref{fig: fine tune}, we observe that performs as well as the other two models initially on the dermaMNIST data set. With respect to the pathMNIST and retinaMNIST data set, the model performs poorly in relation. The accuracy of the LR model does not increase significantly with tuning. The model achieves an accuracy of 73\%, 90\%, and 45\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
 \subsection{Bicubic model}
-From the training and tuning plots, we observe that the bicubic model performs as good as the SRRestNet. This came as a surprise to the authors, as we expected the SRResNet model to perform better by a higher margin than observed. In the case of retinaMNIST, the bicubic model beats the SRResNet model by 5\%! Tuning the model does improve its performance significantly. The model achieves an accuracy of 77\%, 97\%, and 54\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+From Fig. \ref{fig: fine tune}, we observe that the bicubic model performs as good as the SRRestNet. This came as a surprise to the authors, as we expected the SRResNet model to perform better by a higher margin than observed. In the case of retinaMNIST, the bicubic model beats the SRResNet model by 5\%! Tuning the model does improve its performance significantly. The model achieves an accuracy of 77\%, 97\%, and 54\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
 \subsection{SRResNet model}
-From the training and testing plots, we observe that the SRResNet model achieves accuracies comparable to the bicubic model. Fine tuning the model does help and it hits an accuracy of 77\%, 97\%, and 48\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
+From Fig. \ref{fig: fine tune}, we observe that the SRResNet model achieves accuracies comparable to the bicubic model. Fine tuning the model does help and it hits an accuracy of 77\%, 97\%, and 48\% on dermaMNIST, pathMNIST, retinaMNIST respectively.
 
+\begin{figure}
+    \centering
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/finetune_dermamnist.png}
+        \caption{Fine-tuned models for dermaMNIST}
+        \label{fig:fine tune derma}
+    \end{subfigure}
+    
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/finetune_pathmnist.png}
+        \caption{Fine-tuned models for pathMNIST}
+        \label{fig:fine tune path}
+    \end{subfigure}
 
-\subsection*{Results}
+    \begin{subfigure}{0.3\textwidth}
+        \includegraphics[width=\linewidth]{Code/plots/finetune_retinamnist.png}         \caption{Fine-tuned models for retinaMNIST}
+        \label{fig:fine tune retina}
+    \end{subfigure}
+    \caption{Fine-tuned results of the three architectures}
+    \label{fig: fine tune}
+\end{figure}
+
+\section{Conclusion}
 Our experiments revealed that the SRResNet model outperformed the bicubic interpolation approach, achieving an accuracy of 89\% and a loss of 0.32, compared to 88\% accuracy and 0.34 loss for the bicubic interpolation approach. These results indicate that SRResNet can be used to enhance the resolution of medical images, improving the accuracy of classification models.
+
+Looking at the complexity of the algorithms, we see that X is of higher order complexity than Y. As both bicubic and SRResNet architecture achieve comparable classification accuracies, the authors believe it more prudent to choose Y for applications.
+
 \section{Future Work}
 We are currently working on training the SRResNet on medical image data sets. We are also working on training the classifier on the same data sets, from scratch. We aim to showcase the improvement in accuracy of the classifier when trained on the SRResNet generated images.
 
